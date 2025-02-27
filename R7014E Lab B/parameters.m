@@ -30,7 +30,7 @@ linear_params.split_valve_gamma2 = 0.6;
 linear_params.g = 920;
 % Operating Conditions
 
-linear_params.kc = 0.5;
+linear_params.kc = 1;
 
 
 linear_params.u10 = 3;

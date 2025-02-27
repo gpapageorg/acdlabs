@@ -17,6 +17,6 @@ linear_params.gamma1 = 0.70;
 linear_params.gamma2 = 0.60;
 
 
-[G, sys] = generate_linear(linear_params);
+[sys.A, sys.B, sys.C, sys.D] = generate_linear(linear_params);
 
 disp("Complete P0!")

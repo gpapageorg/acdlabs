@@ -52,10 +52,3 @@ B_aug(1:4,1:2) = B_m
 C_aug(1:2,1:4) = C_m
 C_aug(1,5) = 1;
 C_aug(2,6) = 1;
-
-Q = eye(6);
-R = eye(2);
-M = zeros(6,6)
-M(1,1) =1 
-M(2,2) =1
-care(A_aug,B_aug,M'*Q*M,R)
