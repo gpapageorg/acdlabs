@@ -32,7 +32,10 @@ linear_params.g = 920;
 
 linear_params.kc = 0.5;
 
-% linear_params.k1_P0 = 3.33;
+
+linear_params.u10 = 3;
+linear_params.u20 = 3;
+% linear_params.k1_P0 = 3.3 3;
 % linear_params.k2_P0 = 3.35;
 % 
 % linear_params.gamma1_P0 = 0.70;

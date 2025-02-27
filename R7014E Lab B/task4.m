@@ -22,22 +22,27 @@ C(1,5) = 1;
 C(2,6) = 1;
 
 
-R1 = diag([0.1,0.1]);
+R1 = diag([10^-8,10^-8])
 
 R2 = 10^-10;
 N = zeros(6,2);
 N(5,1) = 1;
 N(6,2) = 1;
 
-P = icare(A',C',N*R1*N',R2,0)
+P = icare(A',C',N*R1*N',R2,0);
+K = (P*C')*R2;
 Q2 = diag([1,1]);
 
 M = zeros(2,6);
 M(1,1) = 1;
 M(2,2) = 1;
-Q1 = eye(6);
-R  = eye(2)
+Q1 = eye(2);
+R  = eye(2);
 
-L= lqr(A,B,Q1,R)
+S = icare(A,B,M'*Q1*M, R);
+L = (1\Q2)*B'*S; %Checked With Matlab's lqr command
 
-% sys =ss(A,B,C,0)
+Lr = inv(M*inv((B*L -A))*B);
+
+
+sys =ss(A,B,C,0);
