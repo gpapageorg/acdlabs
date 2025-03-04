@@ -1,4 +1,4 @@
-clc;
+% clc;
 clear;
 close all;
 
@@ -11,7 +11,7 @@ D = sys.D;
 
 % R1 = diag([10^-15.28;10^-15.3]);
 % R1 = diag([0.0001;0.0001])
-R1 = diag([1e-15;1e-15])
+R1 = diag([1e-15;1e-15]);
 
 R2 = 10^-10;
 
@@ -20,7 +20,7 @@ N(5,1) = 1;
 N(6,2) = 1;
 
 P = icare(A',C',N*R1*N',R2);
-K = (P*C')/R2
+K = (P*C')/R2;
 
 M = zeros(2,6);
 M(1,1) = 1;
@@ -34,8 +34,7 @@ Q2  = [40 0;
 S = icare(A,B,M'*Q1*M, Q2);
 
 
-L = inv(Q2)*(B')*S; %Checked With Matlab's lqr command
-    
+L = inv(Q2)*(B')*S %Checked With Matlab's lqr command
 
 % eigs(A-B*L)
 Lr = inv(M*inv((B*L -A))*B);
@@ -45,4 +44,8 @@ sys =ss(A,B,C,0);
 
 d1 = linear_params.tank1_opening * 0.25;
 d2 = linear_params.tank2_opening * 0.25;
-disp(datestr(now, 'HH:MM:SS'))
+disp(datestr(now, 'HH:MM:SS'));
+A
+B
+C
+D

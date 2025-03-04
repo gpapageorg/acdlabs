@@ -36,10 +36,9 @@ linear_params.k2 = 3.35;
 linear_params.gamma1 = 0.70;
 linear_params.gamma2 = 0.60;
 
-[A,B,C,D] = generate_linear(linear_params);
-j = ss(A,B,C,D);
-Gnom = tf(j);
-
+[Anom,Bnom,Cnom,Dnom]= generate_linear(linear_params);
+Gnom = ss(Anom,Bnom,Cnom,Dnom);
+usefull.Gnom = Gnom;
 samples = 10;
 
 for i = 1:samples
@@ -54,29 +53,61 @@ for i = 1:samples
     linear_params.tank1_opening = a1(index3);
     linear_params.tank2_opening = a2(index4);
 
-    [sys.A, sys.B, sys.C, sys.D] = generate_linear(linear_params);
-    sys = ss(sys.A, sys.B, sys.C, sys.D);
-    tfsys = tf(sys);
+    [A,B,C,D]= generate_linear(linear_params);
+    G = tf(ss(A,B,C,D));
     
-    allSystems{end + 1} = tfsys;
+    allSystems{end + 1} = G;
 
-    lr{end+1} = inv(tfsys)*(Gnom - tfsys) ;
+    lr{end+1} = (G - Gnom)*inv(G) ;
 end 
 
-hold on;
-for i=1:length(allSystems)
-    thatSys = lr{i};
-    sigma(thatSys);
-    disp(i)
-end
 
-G11 = tf([2 1],[2 1])
-G12 = tf([1 1],[2 1])
+% hold on;
+% for i=1:length(allSystems)
+%     thatSys = lr{i};
+%     % bode(thatSys)
+%     % disp(i)
+% end
 
-G21 = tf(1,[1 1])
-G21 = tf(1,[4 1])
+s = tf('s');
 
-G = [G11 G12;G21 G22]
-sigma(G)
+G11 = (s + 5)/(s+1);
+G12 = 5 /(s+1);
+G21 = 5 /(s+1);
+G22 = (s + 5)/(s+1);
+% bode([G11 G12;G21 G22])
+
+usefull.D = [G11 G12;G21 G22];
+
+R1 = diag([1e-15;1e-15]);
+
+R2 = 10^-10;
+
+N = zeros(6,2);
+N(5,1) = 1;
+N(6,2) = 1;
+
+P = icare(Anom',Cnom',N*R1*N',R2);
+K = (P*C')/R2;
+
+M = zeros(2,6);
+M(1,1) = 1;
+M(2,2) = 1;
+
+Q1 = [1 0;
+    0 1];
+Q2  = [40 0;
+    0 20];
+
+S = icare(Anom,Bnom,M'*Q1*M, Q2);
 
 
+L = inv(Q2)*(Bnom')*S %Checked With Matlab's lqr command
+
+
+% eigs(A-B*L)
+Lr = inv(M*inv((B*L -A))*B);
+
+Lg = usefull.D*L
+
+% S = 1 + Lg

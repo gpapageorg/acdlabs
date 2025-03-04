@@ -1,6 +1,6 @@
-clc;
-clear;
-close all;
+% clc;
+% clear;
+% close all;
 disp("Running P0!");
 parameters;
 
