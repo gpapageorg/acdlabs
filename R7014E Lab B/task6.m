@@ -39,7 +39,7 @@ linear_params.gamma2 = 0.60;
 [Anom,Bnom,Cnom,Dnom]= generate_linear(linear_params);
 Gnom = ss(Anom,Bnom,Cnom,Dnom);
 usefull.Gnom = Gnom;
-samples = 10;
+samples = 100;
 
 for i = 1:samples
     index1 = randi([1 samples]);
@@ -65,10 +65,9 @@ end
 % hold on;
 % for i=1:length(allSystems)
 %     thatSys = lr{i};
-%     % bode(thatSys)
-%     % disp(i)
+%     bode(thatSys)
+%     disp(i)
 % end
-
 s = tf('s');
 
 G11 = (s + 5)/(s+1);
@@ -102,12 +101,12 @@ Q2  = [40 0;
 S = icare(Anom,Bnom,M'*Q1*M, Q2);
 
 
-L = inv(Q2)*(Bnom')*S %Checked With Matlab's lqr command
+L = inv(Q2)*(Bnom')*S; %Checked With Matlab's lqr command
 
 
 % eigs(A-B*L)
 Lr = inv(M*inv((B*L -A))*B);
 
-Lg = usefull.D*L
+Lg = usefull.D*L;
 
-% S = 1 + Lg
+hinfnorm(usefull.D*L)
