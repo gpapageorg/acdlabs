@@ -1,4 +1,3 @@
-%% Modeling Uncertainties
 clc;
 clear;
 close all;
@@ -36,8 +35,13 @@ linear_params.k2 = 3.35;
 linear_params.gamma1 = 0.70;
 linear_params.gamma2 = 0.60;
 
-[Anom,Bnom,Cnom,Dnom]= generate_linear(linear_params);
-Gnom = ss(Anom,Bnom,Cnom,Dnom);
+[Gnom, sys] = generate_linear_old(linear_params);
+sys = ss(Gnom);
+Anom = sys.A;
+Bnom = sys.B;
+Cnom = sys.C;
+Dnom = sys.D;
+
 usefull.Gnom = Gnom;
 samples = 10;
 
@@ -53,8 +57,7 @@ for i = 1:samples
     linear_params.tank1_opening = a1(index3);
     linear_params.tank2_opening = a2(index4);
 
-    [A,B,C,D]= generate_linear(linear_params);
-    G = tf(ss(A,B,C,D));
+    [G, sys] = generate_linear_old(linear_params);
     
     allSystems{end + 1} = G;
 
@@ -62,14 +65,15 @@ for i = 1:samples
 end 
 
 
-% hold on;
-% for i=1:length(allSystems)
-%     thatSys = lr{i};
-%     bode(thatSys)
-%     disp(i)
-% end
+hold on;
+for i=1:length(allSystems)
+    thatSys = lr{i};
+    bode(thatSys)
+    disp(i)
+end
+
 s = tf('s');
-r0 = 3
+r0 = 3;
 rinf = -0.4;
 tau = 30;
 
@@ -79,7 +83,7 @@ G12 = 0.2/ (s+ 0.05);
 G21 =  0.2/(s + 0.05);
 
 G22 = (tau *s + r0)/(tau *s/rinf+1);
-% bode([G11 G12;G21 G22])
+bode([G11 G12;G21 G22])
 
 usefull.D = [G11 G12;G21 G22];
 
@@ -92,7 +96,7 @@ N(5,1) = 1;
 N(6,2) = 1;
 
 P = icare(Anom',Cnom',N*R1*N',R2);
-K = (P*C')/R2;
+K = (P*Cnom')/R2;
 
 M = zeros(2,6);
 M(1,1) = 1;
@@ -108,13 +112,4 @@ S = icare(Anom,Bnom,M'*Q1*M, Q2);
 
 L = inv(Q2)*(Bnom')*S; %Checked With Matlab's lqr command
 
-
-% eigs(A-B*L)
-% Lr = inv(M*inv((B*L -A))*B);
-% 
-% Lg = usefull.D*L;
-% nom_sys = ss(Anom,Bnom,Cnom,0)
-% nom_sys = tf(nom_sys)
-% loop_gain = nom_sys*L
-% 
-% S = loop_gain*pinv(eye(size(loop_gain)) + loop_gain)
+disp('Run')
